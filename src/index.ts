@@ -11,7 +11,7 @@ console.log("Bot is starting...");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.get("/ping", (_req, res) => {
+app.get("/", (_req, res) => {
   res.send("Bot is alive! 🤖");
 });
 
