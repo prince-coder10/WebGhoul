@@ -1,27 +1,27 @@
 import { YtDlp } from "ytdlp-nodejs";
-import { PassThrough } from "stream";
+import { promises as fs } from "fs";
+import { tmpdir } from "os";
+import { join } from "path";
 
 const ytdlp = new YtDlp();
 
 export default async function downloadYtVideo(url: string): Promise<Buffer> {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const stream = new PassThrough();
+  const tempFile = join(tmpdir(), `video_${Date.now()}.mp4`);
 
-      // Start downloading with yt-dlp
-      const child = ytdlp.exec(url, {
-        format: "mp4",
-        output: "-", // stdout
-      });
-
-      child.stdout.pipe(stream);
-
-      const chunks: Buffer[] = [];
-      stream.on("data", (chunk) => chunks.push(chunk));
-      stream.on("end", () => resolve(Buffer.concat(chunks)));
-      stream.on("error", (err) => reject(err));
-    } catch (err) {
-      reject(err);
-    }
+  return new Promise((resolve, reject) => {
+    const child = ytdlp.exec(url, { format: "mp4", output: tempFile });
+    child.on("error", (err) => reject(err));
+    child.on("close", async (code) => {
+      if (code !== 0) {
+        return reject(new Error(`yt-dlp exited with code ${code}`));
+      }
+      try {
+        const buffer = await fs.readFile(tempFile);
+        await fs.unlink(tempFile); // clean up
+        resolve(buffer);
+      } catch (err) {
+        reject(err);
+      }
+    });
   });
 }
