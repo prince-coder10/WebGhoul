@@ -44,3 +44,5 @@ console.log("Bot is starting...");
     console.error("Error starting bot:", err);
   }
 })();
+
+console.log("Node version:", process.version);
