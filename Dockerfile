@@ -1,7 +1,7 @@
 # ----------------------------
 # 1️⃣ Base build stage
 # ----------------------------
-FROM node:18-bullseye-slim AS build
+FROM node:20-bullseye-slim AS build
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \

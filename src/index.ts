@@ -8,16 +8,16 @@ console.log("Bot is starting...");
 // --------------------
 // Ping Server to keep Render free tier awake
 // --------------------
-const app = express();
-const PORT = process.env.PORT || 3000;
+// const app = express();
+// const PORT = process.env.PORT || 3000;
 
-app.get("/", (_req, res) => {
-  res.send("Bot is alive! 🤖");
-});
+// app.get("/", (_req, res) => {
+//   res.send("Bot is alive! 🤖");
+// });
 
-app.listen(PORT, () => {
-  console.log(`Ping server running on port ${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`Ping server running on port ${PORT}`);
+// });
 
 // --------------------
 // Telegram Bot
