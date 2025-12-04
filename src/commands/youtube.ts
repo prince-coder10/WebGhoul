@@ -1,5 +1,7 @@
-import downloadYtVideo from "../helper/youtubeDownloader.js";
 import { InputFile, type Bot, type Context } from "grammy";
+// @ts-ignore: missing type declarations for y2mate-dl
+import yt from "@vreden/youtube_scraper";
+import axios from "axios";
 
 export default function youtubeCommand(bot: Bot) {
   bot.command("youtube", async (ctx: Context) => {
@@ -19,15 +21,19 @@ export default function youtubeCommand(bot: Bot) {
     await ctx.reply("Please wait, your video is downloading ⏳!");
 
     try {
-      // Download video as a buffer
-      const buffer = await downloadYtVideo(url);
+      const video = await yt.ytmp4(url, 360);
+      console.log(video);
+      const videoUrl = video.download.url;
+      const fileName = video.filename;
+      console.log(videoUrl);
 
-      if (!buffer) {
-        await ctx.reply("Failed to download the video. Try another URL.");
-        return;
-      }
+      // download video
+      const response = await axios.get(videoUrl, {
+        responseType: "arraybuffer",
+      });
+      const buffer = Buffer.from(response.data);
 
-      const file = new InputFile(buffer, "youtube_video.mp4");
+      const file = new InputFile(buffer, fileName);
 
       await ctx.replyWithVideo(file);
     } catch (error) {
