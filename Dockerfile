@@ -30,7 +30,7 @@ RUN npm run build
 # ----------------------------
 # 2️⃣ Final runtime stage
 # ----------------------------
-FROM node:20-bullseye-slim  # Node 20 runtime to fix File issue
+FROM node:20-bullseye-slim
 
 # Set working directory
 WORKDIR /app
