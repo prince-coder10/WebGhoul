@@ -1,29 +1,54 @@
-# 1️⃣ Base image
-FROM node:18-slim
+# ----------------------------
+# 1️⃣ Base build stage
+# ----------------------------
+FROM node:18-bullseye-slim AS build
 
-# 2️⃣ Install yt-dlp (system-level)
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    python3 \
+    python3-full \
     python3-pip \
     ffmpeg \
     && pip3 install yt-dlp \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# 3️⃣ Create app directory
+# Set working directory
 WORKDIR /app
 
-# 4️⃣ Copy package files first (better caching)
+# Copy package files first (for caching)
 COPY package*.json ./
 
-# 5️⃣ Install dependencies
+# Install dependencies
 RUN npm install
 
-# 6️⃣ Copy the rest of the project
+# Copy rest of project
 COPY . .
 
-# 7️⃣ Build TypeScript
+# Build TypeScript
 RUN npm run build
 
-# 8️⃣ Start bot
+# ----------------------------
+# 2️⃣ Final runtime stage (smaller)
+# ----------------------------
+FROM node:18-bullseye-slim
+
+# Copy only necessary files
+WORKDIR /app
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules ./node_modules
+COPY package*.json ./
+
+# Install system deps for yt-dlp
+RUN apt-get update && apt-get install -y \
+    python3-full \
+    python3-pip \
+    ffmpeg \
+    && pip3 install yt-dlp \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Expose a port for pinging
+EXPOSE 5000
+
+# Start the bot
 CMD ["node", "dist/index.js"]
