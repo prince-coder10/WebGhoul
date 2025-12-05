@@ -2,6 +2,8 @@ import "dotenv/config";
 import express from "express";
 import bot from "./bot.js"; // Your main bot instance
 import { loadCommands } from "./utils/loadCommands.js";
+import tiktokCommand from "./commands/tiktok.js";
+import youtubeCommand from "./commands/youtube.js";
 
 console.log("Bot is starting...");
 
@@ -24,7 +26,6 @@ app.listen(PORT, () => {
 // --------------------
 (async () => {
   try {
-    // Load commands dynamically
     await loadCommands(bot);
 
     // Generic message listener

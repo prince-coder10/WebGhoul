@@ -1,11 +1,22 @@
-import { Bot } from "grammy";
+import { Bot, Context } from "grammy";
 import "dotenv/config";
+import {
+  conversations,
+  type ConversationFlavor,
+} from "@grammyjs/conversations";
 
-const BOT_TOKEN = process.env.TG_BOT_TOKEN!;
-if (!BOT_TOKEN) throw new Error("TG_BOT_TOKEN not set");
+// ConversationFlavor now requires a type argument
+type MyContext = Context & ConversationFlavor<Context>;
 
-// Export as default so we can import it in index.ts
-const bot = new Bot(BOT_TOKEN);
+const TOKEN = process.env.TG_BOT_TOKEN!;
+if (!TOKEN) throw new Error("TG_BOT_TOKEN missing");
+
+const bot = new Bot<MyContext>(TOKEN);
+
+// must come before createConversation()
+bot.use(conversations());
+
+export default bot;
 
 // async function clearUpdates() {
 //   await bot.api.getUpdates({ offset: 0 }); // fetch and discard old updates
@@ -14,5 +25,3 @@ const bot = new Bot(BOT_TOKEN);
 // }
 
 // clearUpdates();
-
-export default bot;

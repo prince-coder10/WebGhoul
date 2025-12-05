@@ -1,13 +1,14 @@
-import { Bot } from "grammy";
+import { Bot, Context } from "grammy";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import type { ConversationFlavor } from "@grammyjs/conversations";
 
 // Fix __dirname in ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export async function loadCommands(bot: Bot) {
+export async function loadCommands(bot: Bot<ConversationFlavor<Context>>) {
   const commandsPath = path.join(__dirname, "../commands");
   const commandFiles = fs
     .readdirSync(commandsPath)
